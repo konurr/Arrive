@@ -141,14 +141,13 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/silencingMethodContainer">
 
-        <TextView
-            android:id="@+id/repeats_textView"
+        <Switch
+            android:id="@+id/repeats_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="Repeats:"
+            android:text="Repeats: "
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textSize="24sp"
             android:textStyle="bold"
@@ -163,8 +162,9 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="Mon"
+            android:visibility="invisible"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/repeats_textView" />
+            app:layout_constraintTop_toBottomOf="@+id/repeats_switch" />
 
         <CheckBox
             android:id="@+id/tue_chkbox"
@@ -174,8 +174,9 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="Tue"
+            android:visibility="invisible"
             app:layout_constraintLeft_toRightOf="@+id/mon_chkbox"
-            app:layout_constraintTop_toBottomOf="@+id/repeats_textView" />
+            app:layout_constraintTop_toBottomOf="@+id/repeats_switch" />
 
         <CheckBox
             android:id="@+id/wed_chkbox"
@@ -185,8 +186,9 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="Wed"
+            android:visibility="invisible"
             app:layout_constraintLeft_toRightOf="@+id/tue_chkbox"
-            app:layout_constraintTop_toBottomOf="@+id/repeats_textView" />
+            app:layout_constraintTop_toBottomOf="@+id/repeats_switch" />
 
         <CheckBox
             android:id="@+id/thurs_chkbox"
@@ -197,19 +199,21 @@
             android:layout_marginTop="8dp"
             android:checked="false"
             android:text="Thu"
+            android:visibility="invisible"
             app:layout_constraintLeft_toRightOf="@+id/wed_chkbox"
-            app:layout_constraintTop_toBottomOf="@+id/repeats_textView" />
+            app:layout_constraintTop_toBottomOf="@+id/repeats_switch" />
 
         <CheckBox
             android:id="@+id/fri_chkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="7dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="Fri"
+            android:visibility="invisible"
             app:layout_constraintLeft_toRightOf="@+id/thurs_chkbox"
-            app:layout_constraintTop_toBottomOf="@+id/repeats_textView" />
+            app:layout_constraintTop_toBottomOf="@+id/repeats_switch" />
 
         <CheckBox
             android:id="@+id/sat_chkbox"
@@ -219,6 +223,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="Sat"
+            android:visibility="invisible"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/mon_chkbox" />
 
@@ -230,6 +235,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="Sun"
+            android:visibility="invisible"
             app:layout_constraintLeft_toRightOf="@+id/mon_chkbox"
             app:layout_constraintTop_toBottomOf="@+id/mon_chkbox" />
     </android.support.constraint.ConstraintLayout>
