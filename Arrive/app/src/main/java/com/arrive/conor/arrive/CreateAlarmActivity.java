@@ -2,7 +2,6 @@ package com.arrive.conor.arrive;
 
 import android.app.FragmentManager;
 import android.app.TimePickerDialog;
-import android.icu.util.Calendar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -16,13 +15,16 @@ import android.widget.Toast;
 
 public class CreateAlarmActivity extends AppCompatActivity implements View.OnClickListener,
         SilenceAlarmFragment.Communicator {
+
+    //TODO: Prevent rotation
+
+    long hour, minute, time;
     //Global reference to all views in activity
     TextView tvSelectTime, tvSilenceMethod, tvRingtone, tvDestination;
     TextView hSelectTime, hSilenceMethod, hRingtone;
     Button btnSelectTime, btnSilenceMethod, btnRingtone, btnDestination, btnAlarmCreated;
     CheckBox monChkbox, tueChkbox, wedChkbox, thuChkbox, friChkbox, satChkbox, sunChkbox;
     Switch sRepeats, sNavigation;
-    Calendar cal = Calendar.getInstance();
 
     TimePickerDialog.OnTimeSetListener dialogListener = new TimePickerDialog
             .OnTimeSetListener() {
@@ -30,6 +32,7 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
         public void onTimeSet(TimePicker timePicker, int i, int il) {
             tvSelectTime.setText(timePicker.getHour() + ":"
                     + timePicker.getMinute());
+            time = (timePicker.getHour() * 100) + timePicker.getMinute(); //Sets the alarm time
         }
     };
 
