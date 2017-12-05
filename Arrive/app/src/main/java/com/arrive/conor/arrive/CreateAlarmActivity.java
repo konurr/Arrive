@@ -1,9 +1,14 @@
 package com.arrive.conor.arrive;
 
+import android.app.AlarmManager;
 import android.app.FragmentManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Intent;
+import android.icu.util.Calendar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -16,25 +21,23 @@ import android.widget.Toast;
 public class CreateAlarmActivity extends AppCompatActivity implements View.OnClickListener,
         SilenceAlarmFragment.Communicator {
 
-    //TODO: Prevent rotation
+    final String TAG = "LOG:";
 
-    long hour, minute, time;
+    //TODO: Prevent rotation of this Activity
+
+    //Global reference for Alarm Manager
+    AlarmManager alarmManager;
+    Calendar calendar = Calendar.getInstance();
+    Intent sendAlarm;
+    PendingIntent pendingIntent;
+
+    long time;
     //Global reference to all views in activity
     TextView tvSelectTime, tvSilenceMethod, tvRingtone, tvDestination;
     TextView hSelectTime, hSilenceMethod, hRingtone;
     Button btnSelectTime, btnSilenceMethod, btnRingtone, btnDestination, btnAlarmCreated;
     CheckBox monChkbox, tueChkbox, wedChkbox, thuChkbox, friChkbox, satChkbox, sunChkbox;
     Switch sRepeats, sNavigation;
-
-    TimePickerDialog.OnTimeSetListener dialogListener = new TimePickerDialog
-            .OnTimeSetListener() {
-        @Override
-        public void onTimeSet(TimePicker timePicker, int i, int il) {
-            tvSelectTime.setText(timePicker.getHour() + ":"
-                    + timePicker.getMinute());
-            time = (timePicker.getHour() * 100) + timePicker.getMinute(); //Sets the alarm time
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,8 +90,16 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
 
         btnAlarmCreated = (Button) findViewById(R.id.alarm_created_button);
         btnAlarmCreated.setOnClickListener(this);
+
+        //Initialize alarm manager
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        //Create intent to send broadcast to alarm receiver
+        sendAlarm = new Intent(this, AlarmReceiver.class);
+
     }
 
+    //Display/hide repeats options if switch is on/off
     private void repeatsShown(boolean shown) {
         if (shown) {
             monChkbox.setVisibility(View.VISIBLE);
@@ -108,7 +119,7 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
             sunChkbox.setVisibility(View.INVISIBLE);
         }
     }
-
+    //Display/hide destination if navigation is on/off
     private void destinationShown(boolean shown) {
         if (shown) {
             tvDestination.setVisibility(View.VISIBLE);
@@ -121,7 +132,6 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onClick(View view) {
-
         switch (view.getId()) {
             case R.id.time_select_btn:
                 showTimeDialog();
@@ -136,10 +146,30 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
                 Toast.makeText(this, "Destination", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.alarm_created_button:
+                //Delay intent until current alarm
+                pendingIntent = PendingIntent.getBroadcast(this, 0, sendAlarm,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+                //Set the alarm manager
+                alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                        pendingIntent);
+                Log.i(TAG, "Alarm set for " + calendar.getTime());
                 finish();
                 break;
         }
     }
+
+    //Event listener for TimePicker Time selected
+    TimePickerDialog.OnTimeSetListener dialogListener = new TimePickerDialog
+            .OnTimeSetListener() {
+        @Override
+        public void onTimeSet(TimePicker timePicker, int i, int il) {
+            tvSelectTime.setText(timePicker.getHour() + ":"
+                    + timePicker.getMinute());
+            calendar.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
+            calendar.set(Calendar.MINUTE, timePicker.getMinute());
+            time = (timePicker.getHour() * 100) + timePicker.getMinute(); //Sets the alarm time
+        }
+    };
 
     private void silenceMethod() {
         FragmentManager manager = getFragmentManager();
