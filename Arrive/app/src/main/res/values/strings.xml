@@ -3,4 +3,7 @@
     <string name="title_alarms">Alarms</string>
     <string name="title_history">History</string>
     <string name="title_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Blank Fragment</string>
 </resources>
