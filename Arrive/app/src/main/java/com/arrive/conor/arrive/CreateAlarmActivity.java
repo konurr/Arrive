@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.icu.util.Calendar;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -205,7 +206,7 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
 
     private void showTimeDialog() {
         new TimePickerDialog(CreateAlarmActivity.this, dialogListener, 7,
-                30, false).show();
+                30, true).show();
     }
 
     @Override

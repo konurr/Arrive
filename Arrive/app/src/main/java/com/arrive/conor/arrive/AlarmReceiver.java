@@ -9,18 +9,15 @@ import android.util.Log;
 public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-//        Log.i("SILENCE:", intent.getExtras().getString("silence_method"));
-//        Log.i("REPEATS:", intent.getExtras().getString("repeats"));
-//        Log.i("RINGTONE:", intent.getExtras().getString("ringtone"));
-//        Log.i("NAVIGATION:", intent.getExtras().getString("navigation"));
-        //Create intent to ringtone service
-        Intent serviceIntent = new Intent(context, RingtoneService.class);
+        //intent for ringtone service
+        Intent ringtoneServiceIntent = new Intent(context, RingtoneService.class);
+        ringtoneServiceIntent.putExtra("silence_method", intent.getExtras().getString("silence_method"));
 
-        //start ringtone service if flag is 1 else stop it
+        //start ringtone service if flag is true else stop it
         if (intent.getExtras().getBoolean("startAlarm")) {
-            context.startService(serviceIntent);
+            context.startService(ringtoneServiceIntent);
         } else {
-            context.stopService(serviceIntent);
+            context.stopService(ringtoneServiceIntent);
         }
     }
 }

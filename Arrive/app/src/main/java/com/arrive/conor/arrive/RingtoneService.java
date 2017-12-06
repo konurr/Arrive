@@ -27,11 +27,11 @@ public class RingtoneService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-//        mediaPlayer = MediaPlayer.create(this, Settings.System.DEFAULT_ALARM_ALERT_URI);
-//        mediaPlayer.start();
+        mediaPlayer = MediaPlayer.create(this, Settings.System.DEFAULT_ALARM_ALERT_URI);
+        mediaPlayer.start();
 
-        Log.e("RINGTONE!", "PLAYING THE REALLY OBNOXIOUS RINGTONE");
         Intent startSilencer = new Intent(this, SilenceAlarmActivity.class);
+        startSilencer.putExtra("silence_method", intent.getExtras().getString("silence_method"));
         startActivity(startSilencer);
 
         // If we get killed, after returning from here, restart
@@ -41,6 +41,7 @@ public class RingtoneService extends Service {
     @Override
     public void onDestroy() {
         Log.e("RIP:", "You killed the ringtone service!");
+        mediaPlayer.stop();
         Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
         super.onDestroy();
     }
