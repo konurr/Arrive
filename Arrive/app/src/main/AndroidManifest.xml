@@ -27,9 +27,12 @@
         </activity>
 
         <receiver android:name=".AlarmReceiver" />
+
         <service
             android:name=".RingtoneService"
             android:enabled="true" />
+
+        <activity android:name=".SilenceAlarmActivity"></activity>
     </application>
 
 </manifest>

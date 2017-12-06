@@ -28,7 +28,7 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
     //Global reference for Alarm Manager
     AlarmManager alarmManager;
     Calendar calendar = Calendar.getInstance();
-    Intent sendAlarm;
+    Intent createAlarm;
     PendingIntent pendingIntent;
 
     long time;
@@ -95,7 +95,7 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         //Create intent to send broadcast to alarm receiver
-        sendAlarm = new Intent(this, AlarmReceiver.class);
+        createAlarm = new Intent(this, AlarmReceiver.class);
 
     }
 
@@ -146,16 +146,42 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
                 Toast.makeText(this, "Destination", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.alarm_created_button:
-                //Delay intent until current alarm
-                pendingIntent = PendingIntent.getBroadcast(this, 0, sendAlarm,
+                //Delay intent until alarm time
+                createAlarm.putExtra("silence_method", tvSilenceMethod.getText().toString());
+                createAlarm.putExtra("repeats", isRepeatsEnabled() ? getRepeatsDays() : "Never");
+                createAlarm.putExtra("ringtone", /*getRingtone()*/ "default");//TODO implement getRingtone()
+                createAlarm.putExtra("navigation", isNavigationEnabled() ? getDestination() : "not_required");
+                createAlarm.putExtra("startAlarm", true);//1 == start the alarm | 0 == stop the alarm
+                pendingIntent = PendingIntent.getBroadcast(this, 0, createAlarm,
                         PendingIntent.FLAG_UPDATE_CURRENT);
                 //Set the alarm manager
                 alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                        pendingIntent);
+                        pendingIntent); //TODO Make this repeating
                 Log.i(TAG, "Alarm set for " + calendar.getTime());
                 finish();
                 break;
         }
+    }
+
+    //TODO Implement these properly
+    private String[] getRepeatsDays() {
+        return new String[0];
+    }
+
+    private String getDestination() {
+        return "BT487JJ";
+    }
+
+    private boolean isNavigationEnabled() {
+        return false;
+    }
+
+    private boolean getRingtone() {
+        return false;
+    }
+
+    private boolean isRepeatsEnabled() {
+        return false;
     }
 
     //Event listener for TimePicker Time selected

@@ -7,3 +7,8 @@ That's no more:
 >+ ~~Being late for the lecture~~
 >+ ~~Being late for work~~
 >+ ~~Being late for the meeting~~
+
+**TODO:**
++ Implement listener for checkbox changed (repeats)
++ Prevent app rotation
++ Cancel alarm
