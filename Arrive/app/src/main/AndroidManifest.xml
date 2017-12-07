@@ -33,7 +33,9 @@
             android:enabled="true" />
 
         <activity android:name=".SilenceAlarmActivity" />
-        <activity android:name=".Silencers.SilencerMathSums" />
+        <activity
+            android:name=".Silencers.SilencerMathSums"
+            android:windowSoftInputMode="stateVisible" />
         <activity android:name=".Silencers.SilencerShakeToWake" />
         <activity android:name=".Silencers.SilencerScanABarcode"></activity>
     </application>

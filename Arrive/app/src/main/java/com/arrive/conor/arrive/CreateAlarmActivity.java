@@ -152,7 +152,7 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
                 createAlarm.putExtra("repeats", isRepeatsEnabled() ? getRepeatsDays() : "Never");
                 createAlarm.putExtra("ringtone", /*getRingtone()*/ "default");//TODO implement getRingtone()
                 createAlarm.putExtra("navigation", isNavigationEnabled() ? getDestination() : "not_required");
-                createAlarm.putExtra("startAlarm", true);//1 == start the alarm | 0 == stop the alarm
+                createAlarm.putExtra("startAlarm", true);
                 pendingIntent = PendingIntent.getBroadcast(this, 0, createAlarm,
                         PendingIntent.FLAG_UPDATE_CURRENT);
                 //Set the alarm manager

@@ -42,7 +42,6 @@ public class RingtoneService extends Service {
     public void onDestroy() {
         Log.e("RIP:", "You killed the ringtone service!");
         mediaPlayer.stop();
-        Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
         super.onDestroy();
     }
 
