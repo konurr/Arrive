@@ -43,18 +43,4 @@ public class SilenceAlarmActivity extends AppCompatActivity {
                 Toast.makeText(this, "Unknown Silence Method", Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
-    private void stopAlarmTest() {
-        stopAlarm = new Intent(this, AlarmReceiver.class);
-
-        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-
-        /* STOPPPING THE ALARM */
-        stopAlarm.putExtra("startAlarm", false);
-        pendingIntent = PendingIntent.getBroadcast(this, 0, stopAlarm,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pendingIntent);
-    }
 }
