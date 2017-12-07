@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.arrive.conor.arrive">
 
+    <uses-permission android:name="android.permission.CAMERA" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -37,7 +38,11 @@
             android:name=".Silencers.SilencerMathSums"
             android:windowSoftInputMode="stateVisible" />
         <activity android:name=".Silencers.SilencerShakeToWake" />
-        <activity android:name=".Silencers.SilencerScanABarcode"></activity>
+        <activity android:name=".Silencers.SilencerScanABarcode">
+            <uses-permission android:name="android.permission.CAMERA" />
+            <meta-data
+                android:name="com.google.android.gms.vision.DEPENDENCIES"
+                android:value="barcode" />
+        </activity>
     </application>
-
 </manifest>

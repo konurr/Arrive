@@ -106,12 +106,6 @@ public class SilencerShakeToWake extends AppCompatActivity implements SensorEven
         }
     }
 
-    private void showNavigationDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(super.getApplicationContext());
-        builder.setMessage("Is Navigation Required?").setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
-    }
-
     DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
@@ -130,9 +124,7 @@ public class SilencerShakeToWake extends AppCompatActivity implements SensorEven
     };
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-
-    }
+    public void onAccuracyChanged(Sensor sensor, int i) {}
 
     @Override
     public void onClick(View view) {
