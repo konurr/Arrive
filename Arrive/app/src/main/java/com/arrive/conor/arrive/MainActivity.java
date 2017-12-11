@@ -10,13 +10,6 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     android.app.FragmentManager manager = getFragmentManager();
-    /*Fragments to be used in the main section of the app:
-    *
-    * Create Alarm FAB
-    * Alarm List
-    * History
-    *
-     */
     CreateAlarmFABFragment createAlarmFABFragment;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener

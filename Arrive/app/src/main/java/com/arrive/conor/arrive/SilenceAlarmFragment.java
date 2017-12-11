@@ -31,9 +31,6 @@ public class SilenceAlarmFragment extends DialogFragment implements View.OnClick
         shake = (Button) view.findViewById(R.id.btn_shake);
         shake.setOnClickListener(this);
 
-        picture = (Button) view.findViewById(R.id.btn_camera);
-        picture.setOnClickListener(this);
-
         barcode = (Button) view.findViewById(R.id.btn_barcode);
         barcode.setOnClickListener(this);
 
@@ -50,10 +47,6 @@ public class SilenceAlarmFragment extends DialogFragment implements View.OnClick
                 break;
             case R.id.btn_shake:
                 communicator.onSilenceMethodSelected("Shake To Wake");
-                dismiss();
-                break;
-            case R.id.btn_camera:
-                communicator.onSilenceMethodSelected("Take a Picture");
                 dismiss();
                 break;
             case R.id.btn_barcode:
