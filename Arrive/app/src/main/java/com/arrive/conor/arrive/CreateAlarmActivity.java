@@ -126,6 +126,7 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
             sunChkbox.setVisibility(View.INVISIBLE);
         }
     }
+
     //Display/hide destination if navigation is on/off
     private void destinationShown(boolean shown) {
         if (shown) {
@@ -201,8 +202,11 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
             .OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker timePicker, int i, int il) {
-            tvSelectTime.setText(timePicker.getHour() + ":"
-                    + timePicker.getMinute());
+            if (timePicker.getMinute() < 10)
+                tvSelectTime.setText(timePicker.getHour() + ":0" + timePicker.getMinute());
+            else
+                tvSelectTime.setText(timePicker.getHour() + ":" + timePicker.getMinute());
+
             calendar.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
             calendar.set(Calendar.MINUTE, timePicker.getMinute());
             time = (timePicker.getHour() * 100) + timePicker.getMinute(); //Sets the alarm time
@@ -218,6 +222,7 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
         SilenceAlarmFragment silenceAlarmFragment = new SilenceAlarmFragment();
         silenceAlarmFragment.show(manager, "SilenceAlarmFragment");
     }
+
     @Override
     public void onSilenceMethodSelected(String message) {
         tvSilenceMethod.setText(message);
