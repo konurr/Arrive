@@ -19,16 +19,15 @@
         android:text="Change Destination" />
 
     <Button
-        android:id="@+id/btnDriving"
-        android:layout_width="0dp"
+        android:id="@+id/btnNavigate"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Driving Mode" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="33dp"
+        android:text="Navigate"
+        android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/btnWalk"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Walking Mode" />
+
 </RelativeLayout>

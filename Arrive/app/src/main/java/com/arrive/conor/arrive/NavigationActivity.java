@@ -1,18 +1,21 @@
 package com.arrive.conor.arrive;
 
 import android.Manifest;
+import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,7 +25,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class NavigationActivity extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener {
+public class NavigationActivity extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener, InputDestinationFragment.Communicator {
 
     private GoogleMap mMap;
     final private int REQUEST_COARSE_ACCESS = 123;
@@ -30,12 +33,16 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     LocationManager lm;
     LocationListener locationListener;
 
-    TextView tvDefaultAddress;
     String defaultDestination;
     Button btnDestination;
+    Button btnNavigate;
+
+    FragmentManager manager = getFragmentManager();
+
 
     public static final String PREFS_NAME = "ALARM_INFO";
     SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
 
     @Override
@@ -44,12 +51,13 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         setContentView(R.layout.activity_navigation);
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-
-        tvDefaultAddress = (TextView) findViewById(R.id.defaultDestination);
-        defaultDestination = tvDefaultAddress.getText().toString();
+        editor = sharedPreferences.edit();
 
         btnDestination = (Button) findViewById(R.id.setDestination);
         btnDestination.setOnClickListener(this);
+
+        btnNavigate = (Button) findViewById(R.id.btnNavigate);
+        btnNavigate.setOnClickListener(this);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -131,6 +139,29 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
 
     @Override
     public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.setDestination: //Launch InputDestinationFragment
+                InputDestinationFragment inputDestinationFragment = new InputDestinationFragment();
+                inputDestinationFragment.show(manager, "InputDestinationFragment");
+                break;
+            case R.id.btnNavigate: //Launch intent to Google Maps App
+                Uri gmmIntentUri = Uri.parse("google.navigation:q=" +
+                        sharedPreferences.getString("new_destination",
+                                sharedPreferences.getString("alarm_destination", "")));
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                startActivity(mapIntent);
+                break;
+        }
+    }
+
+    @Override
+    public void setDestination(String streetNumber, String streetName, String city, String postcode) {
+        String destination = streetNumber.trim() + " " + streetName.trim() + " " + city.trim() + " " + postcode.trim();
+        Log.i("NEW DESTINATION", destination);
+        editor.putString("new_destination", destination);
+        editor.commit();
+        Toast.makeText(this, "Destination updated:" + destination, Toast.LENGTH_SHORT).show();
     }
 
     private class MyLocationListener implements LocationListener {
