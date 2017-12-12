@@ -14,10 +14,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.arrive.conor.arrive.AlarmReceiver;
 import com.arrive.conor.arrive.MainActivity;
+import com.arrive.conor.arrive.NavigationActivity;
 import com.arrive.conor.arrive.R;
 
 public class SilencerShakeToWake extends AppCompatActivity implements SensorEventListener, View.OnClickListener {
@@ -95,7 +95,7 @@ public class SilencerShakeToWake extends AppCompatActivity implements SensorEven
                 return;
             }
             lastUpdateTime = currentTime;
-            if (cnt <= 50) {
+            if (cnt <= 10) {
                 tvCounter.setText(String.valueOf(cnt++));
             } else { //device shaken 50 times, stop alarm.
                 sensorManager.unregisterListener(this);
@@ -111,8 +111,8 @@ public class SilencerShakeToWake extends AppCompatActivity implements SensorEven
         public void onClick(DialogInterface dialog, int which) {
             switch (which){
                 case DialogInterface.BUTTON_POSITIVE:
-                    //TODO: Start Navigation Activity
-                    Toast.makeText(SilencerShakeToWake.this, "Launching navigation activity", Toast.LENGTH_SHORT).show();
+                    Intent startNavigation = new Intent(getApplicationContext(), NavigationActivity.class);
+                    startActivity(startNavigation);
                     break;
 
                 case DialogInterface.BUTTON_NEGATIVE:

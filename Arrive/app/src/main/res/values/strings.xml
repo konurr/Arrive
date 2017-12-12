@@ -4,7 +4,9 @@
     <string name="title_history">History</string>
     <string name="title_settings">Settings</string>
     <string name="shake_to_wake">Shake your phone to silence the alarm!</string>
+    <string name="default_address">27 Argyle Terrace BT480DL</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Blank Fragment</string>
+    <string name="title_activity_navigation">Map</string>
 </resources>

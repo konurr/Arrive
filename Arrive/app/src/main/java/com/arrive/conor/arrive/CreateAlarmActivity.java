@@ -5,8 +5,8 @@ import android.app.FragmentManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.icu.util.Calendar;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,9 +20,14 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 public class CreateAlarmActivity extends AppCompatActivity implements View.OnClickListener,
-        SilenceAlarmFragment.Communicator {
+        SilenceAlarmFragment.Communicator, InputDestinationFragment.Communicator {
 
     final String TAG = "LOG:";
+
+    FragmentManager manager = getFragmentManager();
+    public static final String PREFS_NAME = "ALARM_INFO";
+    SharedPreferences sharedPreferences;
+
 
     //TODO: Prevent rotation of this Activity
 
@@ -45,6 +50,7 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_alarm);
 
+        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
         tvSelectTime = (TextView) findViewById(R.id.time_select_textView);
         hSelectTime = (TextView) findViewById(R.id.time_select_hint);
@@ -144,7 +150,7 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
                 Toast.makeText(this, "Ringtone", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.change_destination_btn:
-                Toast.makeText(this, "Destination", Toast.LENGTH_SHORT).show();
+                changeDestination();
                 break;
             case R.id.alarm_created_button:
                 //Delay intent until alarm time
@@ -159,10 +165,15 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
                 alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                         pendingIntent); //TODO Make this repeating
                 Log.i(TAG, "Alarm set for " + calendar.getTime());
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("alarm_time", calendar.getTime().toString());
+                editor.putString("alarm_destination", tvDestination.getText().toString());
+                editor.commit();
                 finish();
                 break;
         }
     }
+
 
     //TODO Implement these properly
     private String[] getRepeatsDays() {
@@ -198,19 +209,32 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
         }
     };
 
-    private void silenceMethod() {
-        FragmentManager manager = getFragmentManager();
-        SilenceAlarmFragment silenceAlarmFragment = new SilenceAlarmFragment();
-        silenceAlarmFragment.show(manager, "SilenceAlarmFragment");
-    }
-
     private void showTimeDialog() {
         new TimePickerDialog(CreateAlarmActivity.this, dialogListener, 7,
                 30, true).show();
     }
 
+    private void silenceMethod() {
+        SilenceAlarmFragment silenceAlarmFragment = new SilenceAlarmFragment();
+        silenceAlarmFragment.show(manager, "SilenceAlarmFragment");
+    }
     @Override
     public void onSilenceMethodSelected(String message) {
         tvSilenceMethod.setText(message);
+    }
+
+    private void changeDestination() {
+        InputDestinationFragment inputDestinationFragment = new InputDestinationFragment();
+        inputDestinationFragment.show(manager, "InputDestinationFragment");
+    }
+
+    @Override
+    public void setDestination(String streetNumber, String streetName, String city, String postcode) {
+        Log.i("STREET NUMBER", streetNumber);
+        Log.i("STREET NAME", streetName);
+        Log.i("CITY", city);
+        Log.i("POSTCODE", postcode);
+        String destination = streetNumber.trim() + " " + streetName.trim() + " " + city.trim() + " " + postcode.trim();
+        tvDestination.setText(destination);
     }
 }
