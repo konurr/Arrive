@@ -187,6 +187,7 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
                 alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                         pendingIntent); //TODO Make this repeating
                 Log.i(TAG, "Alarm set for " + calendar.getTime());
+                editor.putLong("next_alarm_long", calendar.getTimeInMillis());
                 editor.putString("alarm_time", calendar.getTime().toString());
                 editor.putString("alarm_destination", tvDestination.getText().toString());
                 editor.commit();
@@ -250,8 +251,7 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
         public void onClick(DialogInterface dialog, int which) {
             switch (which) {
                 case DialogInterface.BUTTON_POSITIVE:
-                    editor.putString("default_ringtone", chosenRingtoneUri.toString());
-                    editor.commit();
+                    editor.putString("default_ringtone", chosenRingtoneUri.toString()).commit();
                     tvRingtone.setText(ringtone.getTitle(CreateAlarmActivity.this));
                     Toast.makeText(CreateAlarmActivity.this,
                             ringtone.getTitle(CreateAlarmActivity.this) +
@@ -259,7 +259,7 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
                     break;
 
                 case DialogInterface.BUTTON_NEGATIVE:
-                    editor.putString("one_time_ringtone", chosenRingtoneUri.toString());
+                    editor.putString("one_time_ringtone", chosenRingtoneUri.toString()).commit();
                     tvRingtone.setText(ringtone.getTitle(CreateAlarmActivity.this));
                     Toast.makeText(CreateAlarmActivity.this, "Default ringtone won't be changed",
                             Toast.LENGTH_SHORT).show();

@@ -58,8 +58,7 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        editor.remove("new_destination"); //Clears down previously set new destination
-        editor.commit();
+        editor.remove("new_destination").commit(); //Clears down previously set new destination
 
         btnDestination = (Button) findViewById(R.id.setDestination);
         btnDestination.setOnClickListener(this);
@@ -193,8 +192,7 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     public void setDestination(String streetNumber, String streetName, String city, String postcode) {
         String destination = streetNumber.trim() + " " + streetName.trim() + " " + city.trim() + " " + postcode.trim();
         Log.i("NEW DESTINATION", destination);
-        editor.putString("new_destination", destination);
-        editor.commit();
+        editor.putString("new_destination", destination).commit();
         Toast.makeText(this, "Destination updated:" + destination, Toast.LENGTH_SHORT).show();
     }
 

@@ -1,5 +1,6 @@
 package com.arrive.conor.arrive;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -57,4 +58,15 @@ public class MainActivity extends AppCompatActivity {
                         .commit();
     }
 
+    @Override
+    protected void onResume() { //updates the fragment next alarm time with newly set alarm
+        super.onResume();
+        createAlarmFABFragment = new CreateAlarmFABFragment();
+        manager.beginTransaction().replace(
+                R.id.contentLayout,
+                createAlarmFABFragment,
+                createAlarmFABFragment
+                        .getTag())
+                .commit();
+    }
 }
