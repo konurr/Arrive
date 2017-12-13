@@ -12,6 +12,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         //intent for ringtone service
         Intent ringtoneServiceIntent = new Intent(context, RingtoneService.class);
         ringtoneServiceIntent.putExtra("silence_method", intent.getExtras().getString("silence_method"));
+        ringtoneServiceIntent.putExtra("ringtone", intent.getExtras().getString("ringtone"));
 
         //start ringtone service if flag is true else stop it
         if (intent.getExtras().getBoolean("startAlarm")) {

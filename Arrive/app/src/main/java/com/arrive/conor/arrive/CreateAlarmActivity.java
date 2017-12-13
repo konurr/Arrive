@@ -1,12 +1,18 @@
 package com.arrive.conor.arrive;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.FragmentManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.icu.util.Calendar;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +25,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.arrive.conor.arrive.Silencers.SilencerShakeToWake;
+
 public class CreateAlarmActivity extends AppCompatActivity implements View.OnClickListener,
         SilenceAlarmFragment.Communicator, InputDestinationFragment.Communicator {
 
@@ -27,6 +35,8 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
     FragmentManager manager = getFragmentManager();
     public static final String PREFS_NAME = "ALARM_INFO";
     SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+    Ringtone ringtone = null;
 
 
     //TODO: Prevent rotation of this Activity
@@ -44,6 +54,7 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
     Button btnSelectTime, btnSilenceMethod, btnRingtone, btnDestination, btnAlarmCreated;
     CheckBox monChkbox, tueChkbox, wedChkbox, thuChkbox, friChkbox, satChkbox, sunChkbox;
     Switch sRepeats, sNavigation;
+    String chosenRingtoneUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +62,7 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.activity_create_alarm);
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        editor = sharedPreferences.edit();
 
         tvSelectTime = (TextView) findViewById(R.id.time_select_textView);
         hSelectTime = (TextView) findViewById(R.id.time_select_hint);
@@ -79,6 +91,13 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
         //TODO: Implement listener for checkbox changed
 
         tvRingtone = (TextView) findViewById(R.id.ringtone_textView);
+        if (sharedPreferences.getString("default_ringtone", "") != null) {
+            Uri uri = Uri.parse(sharedPreferences.getString("default_ringtone", ""));
+            Ringtone textViewRingtone = RingtoneManager.getRingtone(this, uri);
+            tvRingtone.setText(textViewRingtone.getTitle(this) + " (default)");
+        } else {
+            tvRingtone.setText("Default");
+        }
         hRingtone = (TextView) findViewById(R.id.ringtone_hint);
         btnRingtone = (Button) findViewById(R.id.ringtone_select_btn);
         btnRingtone.setOnClickListener(this);
@@ -148,7 +167,7 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
                 silenceMethod();
                 break;
             case R.id.ringtone_select_btn:
-                Toast.makeText(this, "Ringtone", Toast.LENGTH_SHORT).show();
+                getRingtone();
                 break;
             case R.id.change_destination_btn:
                 changeDestination();
@@ -157,8 +176,10 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
                 //Delay intent until alarm time
                 createAlarm.putExtra("silence_method", tvSilenceMethod.getText().toString());
                 createAlarm.putExtra("repeats", isRepeatsEnabled() ? getRepeatsDays() : "Never");
-                createAlarm.putExtra("ringtone", /*getRingtone()*/ "default");//TODO implement getRingtone()
-                createAlarm.putExtra("navigation", isNavigationEnabled() ? getDestination() : "not_required");
+                createAlarm.putExtra("ringtone", sharedPreferences.getString("default_ringtone",
+                        "one_time_ringtone"));
+                createAlarm.putExtra("navigation", isNavigationEnabled() ? getDestination() :
+                        "not_required");
                 createAlarm.putExtra("startAlarm", true);
                 pendingIntent = PendingIntent.getBroadcast(this, 0, createAlarm,
                         PendingIntent.FLAG_UPDATE_CURRENT);
@@ -166,7 +187,6 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
                 alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                         pendingIntent); //TODO Make this repeating
                 Log.i(TAG, "Alarm set for " + calendar.getTime());
-                SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("alarm_time", calendar.getTime().toString());
                 editor.putString("alarm_destination", tvDestination.getText().toString());
                 editor.commit();
@@ -189,9 +209,64 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
         return false;
     }
 
-    private boolean getRingtone() {
-        return false;
+    private void getRingtone() {
+
+        Uri defaultRintoneUri = RingtoneManager.getActualDefaultRingtoneUri(this,
+                RingtoneManager.TYPE_RINGTONE);
+        Ringtone defaultRingtone = RingtoneManager.getRingtone(this, defaultRintoneUri);
+        Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select ringtone for notifications:");
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, defaultRintoneUri);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM);
+        startActivityForResult(intent, 999);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK && requestCode == 999) {
+            Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+            if (uri != null) {
+                this.chosenRingtoneUri = uri.toString();
+                ringtone = RingtoneManager.getRingtone(this, uri);
+            } else {
+                ringtone = RingtoneManager.getRingtone(this,
+                        RingtoneManager.getActualDefaultRingtoneUri(this,
+                                RingtoneManager.TYPE_ALARM));
+                this.chosenRingtoneUri = null;
+            }
+        }
+        String title = ringtone.getTitle(this);
+
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setMessage("Set " + title +
+                " as default ringtone for Arrive?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+    }
+
+    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE:
+                    editor.putString("default_ringtone", chosenRingtoneUri.toString());
+                    editor.commit();
+                    tvRingtone.setText(ringtone.getTitle(CreateAlarmActivity.this));
+                    Toast.makeText(CreateAlarmActivity.this,
+                            ringtone.getTitle(CreateAlarmActivity.this) +
+                                    " set as default ringtone", Toast.LENGTH_SHORT).show();
+                    break;
+
+                case DialogInterface.BUTTON_NEGATIVE:
+                    editor.putString("one_time_ringtone", chosenRingtoneUri.toString());
+                    tvRingtone.setText(ringtone.getTitle(CreateAlarmActivity.this));
+                    Toast.makeText(CreateAlarmActivity.this, "Default ringtone won't be changed",
+                            Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
 
     private boolean isRepeatsEnabled() {
         return false;
@@ -239,7 +314,10 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
         Log.i("STREET NAME", streetName);
         Log.i("CITY", city);
         Log.i("POSTCODE", postcode);
-        String destination = streetNumber.trim() + " " + streetName.trim() + " " + city.trim() + " " + postcode.trim();
+        String destination = streetNumber.trim() + " "
+                + streetName.trim() + " "
+                + city.trim() + " "
+                + postcode.trim();
         tvDestination.setText(destination);
     }
 }

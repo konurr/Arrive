@@ -4,6 +4,7 @@ package com.arrive.conor.arrive;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
@@ -24,10 +25,15 @@ public class RingtoneService extends Service {
     }
 
 
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        mediaPlayer = MediaPlayer.create(this, Settings.System.DEFAULT_ALARM_ALERT_URI);
+        Uri uri = Settings.System.DEFAULT_ALARM_ALERT_URI;
+        //If user has selected ringtone use it instead
+        if(intent.getExtras().getString("ringtone") != "default") {
+            uri = Uri.parse(intent.getExtras().getString("ringtone"));
+        }
+
+        mediaPlayer = MediaPlayer.create(this, uri);
         mediaPlayer.start();
 
         Intent startSilencer = new Intent(this, SilenceAlarmActivity.class);
