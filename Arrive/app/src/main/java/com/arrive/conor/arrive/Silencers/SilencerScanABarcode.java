@@ -6,34 +6,31 @@ import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Looper;
-import android.support.annotation.RequiresPermission;
+import android.icu.util.Calendar;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.arrive.conor.arrive.AlarmReceiver;
 import com.arrive.conor.arrive.MainActivity;
+import com.arrive.conor.arrive.NavigationActivity;
 import com.arrive.conor.arrive.R;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
-import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class SilencerScanABarcode extends AppCompatActivity implements View.OnClickListener {
 
@@ -47,10 +44,19 @@ public class SilencerScanABarcode extends AppCompatActivity implements View.OnCl
     TextView barcodeInfo;
     BarcodeDetector barcodeDetector;
     CameraSource cameraSource;
+    Calendar alarmStart, alarmStop;
+
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+    public static final String PREFS_NAME = "ALARM_INFO";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        alarmStart = Calendar.getInstance();
+        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
         setContentView(R.layout.activity_silencer_scan_abarcode);
 
         cameraView = (SurfaceView) findViewById(R.id.camera_view);
@@ -97,7 +103,10 @@ public class SilencerScanABarcode extends AppCompatActivity implements View.OnCl
                         final SparseArray<Barcode> barcodes = detections.getDetectedItems();
 
                         if (barcodes.size() != 0) {
-                            silenceAlarm();
+                            alarmStop = Calendar.getInstance();
+                            String timeTakenToSilence = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(Math.abs(alarmStop.getTimeInMillis() - alarmStart.getTimeInMillis())));
+                            silenceAlarm(timeTakenToSilence);
+                            Log.i("TIME TAKEN TO SILENCE", timeTakenToSilence);
                             cameraView.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -126,9 +135,8 @@ public class SilencerScanABarcode extends AppCompatActivity implements View.OnCl
         public void onClick(DialogInterface dialog, int which) {
             switch (which) {
                 case DialogInterface.BUTTON_POSITIVE:
-                    //TODO: Start Navigation Activity
-                    Toast.makeText(SilencerScanABarcode.this,
-                            "Launching navigation activity", Toast.LENGTH_SHORT).show();
+                    Intent startNavigation = new Intent(getApplicationContext(), NavigationActivity.class);
+                    startActivity(startNavigation);
                     break;
 
                 case DialogInterface.BUTTON_NEGATIVE:
@@ -141,7 +149,16 @@ public class SilencerScanABarcode extends AppCompatActivity implements View.OnCl
         }
     };
 
-    protected void silenceAlarm() {
+    @Override
+    public void onClick(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+        builder.setMessage("Is Navigation Required?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+    }
+
+    protected void silenceAlarm(String timeTakenToSilence) {
+        editor.putString("time_taken", timeTakenToSilence).commit();
+
         stopAlarm = new Intent(SilencerScanABarcode.super.getApplicationContext(),
                 AlarmReceiver.class);
 
@@ -154,12 +171,5 @@ public class SilencerScanABarcode extends AppCompatActivity implements View.OnCl
         alarmManager.set(AlarmManager.RTC_WAKEUP,
                 System.currentTimeMillis(),
                 pendingIntent);
-    }
-
-    @Override
-    public void onClick(View view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-        builder.setMessage("Is Navigation Required?").setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
     }
 }

@@ -1,17 +1,18 @@
 package com.arrive.conor.arrive;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
     android.app.FragmentManager manager = getFragmentManager();
     CreateAlarmFABFragment createAlarmFABFragment;
+    HistoryFragment historyFragment;
+    SettingsFragment settingsFragment;
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -25,14 +26,23 @@ public class MainActivity extends AppCompatActivity {
     protected boolean displayFrag(MenuItem item){
         switch (item.getItemId()) {
             case R.id.navigation_alarms://Display list of alarms frag
-                //Show FAB on alarm page
-                manager.beginTransaction().show(createAlarmFABFragment).commit();
+                //Show FAB alarm page
+                manager.beginTransaction().replace(
+                        R.id.contentLayout,
+                        createAlarmFABFragment
+                ).commit();
                 return true;
             case R.id.navigation_history://Display alarm history frag
-                manager.beginTransaction().hide(createAlarmFABFragment).commit();
+                manager.beginTransaction().replace(
+                        R.id.contentLayout,
+                        historyFragment
+                ).commit();
                 return true;
             case R.id.navigation_settings://Switch to settings activity
-                manager.beginTransaction().hide(createAlarmFABFragment).commit();
+                manager.beginTransaction().replace(
+                        R.id.contentLayout,
+                        settingsFragment
+                ).commit();
                 return true;
         }
         return false;
@@ -48,25 +58,17 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        //Start app showing FAB fragment for creating new alarm
+        //Initialize the fragments
         createAlarmFABFragment = new CreateAlarmFABFragment();
+        historyFragment = new HistoryFragment();
+        settingsFragment = new SettingsFragment();
+
+        //Start app showing FAB fragment for creating new alarm
         manager.beginTransaction().replace(
                 R.id.contentLayout,
                 createAlarmFABFragment,
                 createAlarmFABFragment
                         .getTag())
                         .commit();
-    }
-
-    @Override
-    protected void onResume() { //updates the fragment next alarm time with newly set alarm
-        super.onResume();
-        createAlarmFABFragment = new CreateAlarmFABFragment();
-        manager.beginTransaction().replace(
-                R.id.contentLayout,
-                createAlarmFABFragment,
-                createAlarmFABFragment
-                        .getTag())
-                .commit();
     }
 }

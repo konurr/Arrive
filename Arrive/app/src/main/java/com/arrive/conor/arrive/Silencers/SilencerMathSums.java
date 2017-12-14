@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.arrive.conor.arrive.AlarmReceiver;
 import com.arrive.conor.arrive.MainActivity;
+import com.arrive.conor.arrive.NavigationActivity;
 import com.arrive.conor.arrive.R;
 import com.arrive.conor.arrive.RingtoneService;
 
@@ -107,7 +108,8 @@ public class SilencerMathSums extends AppCompatActivity implements View.OnClickL
         public void onClick(DialogInterface dialog, int which) {
             switch (which){
                 case DialogInterface.BUTTON_POSITIVE:
-                    //TODO: Start Navigation Activity
+                    Intent startNavigation = new Intent(getApplicationContext(), NavigationActivity.class);
+                    startActivity(startNavigation);
                     break;
 
                 case DialogInterface.BUTTON_NEGATIVE:

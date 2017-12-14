@@ -17,10 +17,6 @@ import java.util.Date;
 
 import static android.content.Context.MODE_PRIVATE;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class CreateAlarmFABFragment extends Fragment {
     FloatingActionButton fab;
     public static final String PREFS_NAME = "ALARM_INFO";
@@ -45,6 +41,7 @@ public class CreateAlarmFABFragment extends Fragment {
         if (nextAlarmLong != -1) {
             Date nextAlarm = determineNextAlarmTime(sharedPreferences.getLong("next_alarm_long", 0L));
             String displayedAlarm = new SimpleDateFormat("EEE d MMM @ h:mm a").format(nextAlarm);
+
             tvNextAlarm.setText("Next Alarm: " + displayedAlarm);
             tvNextAlarm.setTextSize(24);
         }
@@ -59,6 +56,28 @@ public class CreateAlarmFABFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        View view = getView();
+        if (view != null) {
+            view.setFocusableInTouchMode(true);
+            view.requestFocus();
+        }
+
+        tvNextAlarm = (TextView)  view.findViewById(R.id.tvNextAlarm);
+        long nextAlarmLong = sharedPreferences.getLong("next_alarm_long", -1);
+        if (nextAlarmLong != -1) {
+            Date nextAlarm = determineNextAlarmTime(sharedPreferences.getLong("next_alarm_long", 0L));
+            String displayedAlarm = new SimpleDateFormat("EEE d MMM @ h:mm a").format(nextAlarm);
+
+            tvNextAlarm.setText("Next Alarm: " + displayedAlarm);
+            tvNextAlarm.setTextSize(24);
+        }
+
     }
 
     public Date determineNextAlarmTime(Long nextAlarmTime) {

@@ -9,5 +9,6 @@
         \n Press the red button to create one!</string>
 
     <string name="hello_blank_fragment">Blank Fragment</string>
+    <string name="history_explanation">Why so little info?\nKeep using the app until we have enough data to analyse.\nSuch as average silencing time, favourite silencing method, etc.</string>
     <string name="title_activity_navigation">Map</string>
 </resources>
