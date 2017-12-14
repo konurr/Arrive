@@ -70,6 +70,7 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
         btnSelectTime.setOnClickListener(this);
 
         tvSilenceMethod = (TextView) findViewById(R.id.silence_method_textView);
+        tvSilenceMethod.setText(sharedPreferences.getString("default_silence_method", "Math Sums"));
         hSilenceMethod = (TextView) findViewById(R.id.silence_mthd_hint);
         btnSilenceMethod = (Button) findViewById(R.id.silence_mthd_btn);
         btnSilenceMethod.setOnClickListener(this);
@@ -102,17 +103,29 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
         btnRingtone = (Button) findViewById(R.id.ringtone_select_btn);
         btnRingtone.setOnClickListener(this);
 
+        tvDestination = (TextView) findViewById(R.id.destination_textView);
+        tvDestination.setText(sharedPreferences.getString("default_destination",
+                "27 Argyle Terrace BT480DL"));
+        btnDestination = (Button) findViewById(R.id.change_destination_btn);
+        btnDestination.setOnClickListener(this);
+
         sNavigation = (Switch) findViewById(R.id.navigation_switch);
+        sNavigation.setChecked(sharedPreferences.getBoolean("default_navigation_enabled", false));
+        if (sNavigation.isChecked())
+            displayDestination(true);
+
         sNavigation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                destinationShown(b);
+                if (b) {
+                    displayDestination(true);
+                } else {
+                    displayDestination(false);
+                }
             }
         });
 
-        tvDestination = (TextView) findViewById(R.id.destination_textView);
-        btnDestination = (Button) findViewById(R.id.change_destination_btn);
-        btnDestination.setOnClickListener(this);
+
 
         btnAlarmCreated = (Button) findViewById(R.id.alarm_created_button);
         btnAlarmCreated.setOnClickListener(this);
@@ -146,9 +159,9 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    //Display/hide destination if navigation is on/off
-    private void destinationShown(boolean shown) {
-        if (shown) {
+    //Display/hide destination section depending on switch value
+    private void displayDestination(boolean display) {
+        if (display) {
             tvDestination.setVisibility(View.VISIBLE);
             btnDestination.setVisibility(View.VISIBLE);
         } else {
@@ -212,14 +225,13 @@ public class CreateAlarmActivity extends AppCompatActivity implements View.OnCli
 
     private void getRingtone() {
 
-        Uri defaultRintoneUri = RingtoneManager.getActualDefaultRingtoneUri(this,
+        Uri defaultRingtoneUri = RingtoneManager.getActualDefaultRingtoneUri(this,
                 RingtoneManager.TYPE_RINGTONE);
-        Ringtone defaultRingtone = RingtoneManager.getRingtone(this, defaultRintoneUri);
         Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
-        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select ringtone for notifications:");
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select ringtone for Arrive:");
         intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
         intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
-        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, defaultRintoneUri);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, defaultRingtoneUri);
         intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM);
         startActivityForResult(intent, 999);
     }

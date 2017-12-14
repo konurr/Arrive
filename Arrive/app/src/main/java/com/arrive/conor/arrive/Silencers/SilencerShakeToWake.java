@@ -5,10 +5,12 @@ import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.icu.util.Calendar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -20,6 +22,8 @@ import com.arrive.conor.arrive.MainActivity;
 import com.arrive.conor.arrive.NavigationActivity;
 import com.arrive.conor.arrive.R;
 
+import java.util.concurrent.TimeUnit;
+
 public class SilencerShakeToWake extends AppCompatActivity implements SensorEventListener, View.OnClickListener {
 
     TextView tvMsg, tvCounter, tvTotal;
@@ -28,6 +32,12 @@ public class SilencerShakeToWake extends AppCompatActivity implements SensorEven
     AlarmManager alarmManager;
     Intent stopAlarm, returnHome;
     PendingIntent pendingIntent;
+
+    Calendar alarmStart, alarmStop;
+
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+    public static final String PREFS_NAME = "ALARM_INFO";
 
     Button btnStopAlarm;
 
@@ -38,6 +48,11 @@ public class SilencerShakeToWake extends AppCompatActivity implements SensorEven
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        alarmStart = Calendar.getInstance();
+
+        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
         setContentView(R.layout.activity_silencer_shake_to_wake);
 
         tvMsg = (TextView) findViewById(R.id.tvMsg);
@@ -101,7 +116,7 @@ public class SilencerShakeToWake extends AppCompatActivity implements SensorEven
                 sensorManager.unregisterListener(this);
                 //show stop button
                 btnStopAlarm.setVisibility(View.VISIBLE);
-
+                alarmStop = Calendar.getInstance();
             }
         }
     }
@@ -129,6 +144,8 @@ public class SilencerShakeToWake extends AppCompatActivity implements SensorEven
     @Override
     public void onClick(View view) {
         stopAlarm = new Intent(this, AlarmReceiver.class);
+        String timeTakenToSilence = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(Math.abs(alarmStop.getTimeInMillis() - alarmStart.getTimeInMillis())));
+        editor.putString("time_taken", timeTakenToSilence).commit();
 
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 

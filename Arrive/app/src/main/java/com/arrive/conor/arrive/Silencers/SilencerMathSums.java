@@ -5,7 +5,9 @@ import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.icu.util.Calendar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +24,8 @@ import com.arrive.conor.arrive.NavigationActivity;
 import com.arrive.conor.arrive.R;
 import com.arrive.conor.arrive.RingtoneService;
 
+import java.util.concurrent.TimeUnit;
+
 public class SilencerMathSums extends AppCompatActivity implements View.OnClickListener,
         View.OnFocusChangeListener {
     AlarmManager alarmManager;
@@ -34,9 +38,22 @@ public class SilencerMathSums extends AppCompatActivity implements View.OnClickL
 
     int q1Answer, q2Answer, q3Answer;
 
+    Calendar alarmStart, alarmStop;
+
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+    public static final String PREFS_NAME = "ALARM_INFO";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        alarmStart = Calendar.getInstance();
+
+        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
         setContentView(R.layout.activity_silencer_math_sums);
 
         q1op1 = (TextView) findViewById(R.id.tvQ1OperandOne);
@@ -85,6 +102,10 @@ public class SilencerMathSums extends AppCompatActivity implements View.OnClickL
 
             if (checkAnswerOne() && checkAnswerTwo() && checkAnswerThree()) {
                 //If all answers are correct stop the alarm
+                alarmStop = Calendar.getInstance();
+                String timeTakenToSilence = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(Math.abs(alarmStop.getTimeInMillis() - alarmStart.getTimeInMillis())));
+                editor.putString("time_taken", timeTakenToSilence).commit();
+
                 stopAlarm = new Intent(this, AlarmReceiver.class);
 
                 alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);

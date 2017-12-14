@@ -1,17 +1,23 @@
 package com.arrive.conor.arrive;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SilenceAlarmFragment.Communicator, InputDestinationFragment.Communicator{
 
     android.app.FragmentManager manager = getFragmentManager();
     CreateAlarmFABFragment createAlarmFABFragment;
     HistoryFragment historyFragment;
     SettingsFragment settingsFragment;
+
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+    public static final String PREFS_NAME = "ALARM_INFO";
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -53,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        sharedPreferences = this.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
         //Creates bottom nav bar
         // Sets listener for selected bottom nav bar item
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
@@ -70,5 +79,20 @@ public class MainActivity extends AppCompatActivity {
                 createAlarmFABFragment
                         .getTag())
                         .commit();
+    }
+
+    @Override
+    public void onSilenceMethodSelected(String message) {
+        editor.putString("default_silence_method", message).commit();
+        Toast.makeText(this, "Default silence method: " + message, Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    public void setDestination(String streetNumber, String streetName, String city, String postcode) {
+        String destination = streetNumber.trim() + " "
+                + streetName.trim() + " "
+                + city.trim() + " "
+                + postcode.trim();
+        editor.putString("default_destination", destination).commit();
+        Toast.makeText(this, "Default destination: " + destination, Toast.LENGTH_SHORT).show();
     }
 }
