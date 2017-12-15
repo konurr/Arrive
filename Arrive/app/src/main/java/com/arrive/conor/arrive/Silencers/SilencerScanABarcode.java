@@ -78,7 +78,8 @@ public class SilencerScanABarcode extends AppCompatActivity implements View.OnCl
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
                 try {
-                    if (ActivityCompat.checkSelfPermission(SilencerScanABarcode.super.getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(SilencerScanABarcode.super.getApplicationContext(),
+                            Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                         // TODO: Request permission if not present!
                         //    ActivityCompat#requestPermissions
                         // here to request the missing permissions, and then overriding

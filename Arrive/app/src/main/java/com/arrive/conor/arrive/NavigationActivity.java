@@ -118,12 +118,12 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
 
         try { //Try to get destination location to place pin
             p = getLocationFromAddress(sharedPreferences.getString("alarm_destination", ""));
-            mMap.addMarker(new MarkerOptions().position(p).title("Destination"));
+            mMap.addMarker(new MarkerOptions().position(p).title("Destination")).showInfoWindow();
         } catch (IllegalArgumentException e) { //If network/location unavailable then use last known location
             p = new LatLng(
                     lm.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude(),
                     lm.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude());
-            mMap.addMarker(new MarkerOptions().position(p).title("Last known location"));
+            mMap.addMarker(new MarkerOptions().position(p).title("Last known location")).showInfoWindow();
         }
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(p, 12.0f));
@@ -162,9 +162,17 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
 
             p1 = new LatLng(location.getLatitude(), location.getLongitude());
 
-        } catch (IOException ex) {
-
-            ex.printStackTrace();
+        } catch (IOException | IllegalArgumentException ex) { //IllegalArgumentException is thrown when internet connection is unavailable
+            Toast.makeText(this, "No internet connection, using last known location", Toast.LENGTH_SHORT).show();
+            try {
+                p1 = new LatLng(
+                        lm.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude(),
+                        lm.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude());
+            } catch (SecurityException e) {
+                Toast.makeText(this, "Unable to get last known location. Navigation unavailable", Toast.LENGTH_SHORT).show();
+                Log.e("ERROR", "Location unavailable, navigation unavailable");
+                p1 = null;
+            }
         }
 
         return p1;
@@ -194,11 +202,13 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
         Log.i("NEW DESTINATION", destination);
 
         p = getLocationFromAddress(destination);
-        mMap.addMarker(new MarkerOptions().position(p).title("Destination"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(p, 12.0f));
+        if (p != null) {
+            mMap.addMarker(new MarkerOptions().position(p).title("Destination")).showInfoWindow();
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(p, 12.0f));
 
-        editor.putString("new_destination", destination).commit();
-        Toast.makeText(this, "Destination updated:" + destination, Toast.LENGTH_SHORT).show();
+            editor.putString("new_destination", destination).commit();
+            Toast.makeText(this, "Destination updated:" + destination, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private class MyLocationListener implements LocationListener {

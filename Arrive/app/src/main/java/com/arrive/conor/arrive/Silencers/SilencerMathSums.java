@@ -91,6 +91,7 @@ public class SilencerMathSums extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.btnSubmit) {
+            //Null check
             if (q1Attempt.getText().toString().equals("") ||
                     q2Attempt.getText().toString().equals("") ||
                     q3Attempt.getText().toString().equals(""))
