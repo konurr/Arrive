@@ -8,10 +8,7 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-
-
 public class MathSumSilencerTest {
-
     private SilencerMathSums silencerMathSums;
     int num;
     @Before
@@ -21,11 +18,14 @@ public class MathSumSilencerTest {
     }
 
     @Test
-    public void validateRandomNumberRange() throws Exception {
+    public void numberLessThanFifty() throws Exception {
         boolean lessThanFifty = num < 51;
-        boolean greaterThanZero = num > 0;
-
         assertThat(lessThanFifty, is(true));
+    }
+
+    @Test
+    public void numberGreaterThanZero() throws Exception {
+        boolean greaterThanZero = num > 0;
         assertThat(greaterThanZero, is(true));
     }
 }
