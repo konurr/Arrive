@@ -193,7 +193,7 @@ public class SilencerMathSums extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private String randomNumber() {
+    public String randomNumber() {
         int random = (int) (Math.random() * 50 + 1);
         String randomString = String.valueOf(random);
         return randomString;

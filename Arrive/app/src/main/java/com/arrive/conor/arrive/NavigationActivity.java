@@ -192,6 +192,11 @@ public class NavigationActivity extends FragmentActivity implements OnMapReadyCa
     public void setDestination(String streetNumber, String streetName, String city, String postcode) {
         String destination = streetNumber.trim() + " " + streetName.trim() + " " + city.trim() + " " + postcode.trim();
         Log.i("NEW DESTINATION", destination);
+
+        p = getLocationFromAddress(destination);
+        mMap.addMarker(new MarkerOptions().position(p).title("Destination"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(p, 12.0f));
+
         editor.putString("new_destination", destination).commit();
         Toast.makeText(this, "Destination updated:" + destination, Toast.LENGTH_SHORT).show();
     }

@@ -138,24 +138,9 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
         silenceAlarmFragment.show(manager, "SilenceAlarmFragment");
     }
 
-//    @Override
-//    public void onSilenceMethodSelected(String message) {
-//        editor.putString("default_silence_method", message).commit();
-//        Toast.makeText(getContext(), "Default silence method: " + message, Toast.LENGTH_SHORT).show();
-//    }
 
     private void changeDestination() {
         InputDestinationFragment inputDestinationFragment = new InputDestinationFragment();
         inputDestinationFragment.show(manager, "InputDestinationFragment");
     }
-
-//    @Override
-//    public void setDestination(String streetNumber, String streetName, String city, String postcode) {
-//        String destination = streetNumber.trim() + " "
-//                + streetName.trim() + " "
-//                + city.trim() + " "
-//                + postcode.trim();
-//        editor.putString("default_destination", destination).commit();
-//        Toast.makeText(getContext(), "Default destination: " + destination, Toast.LENGTH_SHORT).show();
-//    }
 }
